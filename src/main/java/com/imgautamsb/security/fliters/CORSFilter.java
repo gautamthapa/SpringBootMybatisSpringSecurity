@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -29,17 +30,14 @@ public class CORSFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
 
-        String origin = request.getHeader("Origin");
-        List<String> originList = service.getOriginList();
+        String reqOrigin = request.getHeader("Origin");
+        String origin = service.getOrigin(reqOrigin);
 
-        response.setHeader("Access-Control-Allow-Origin", String.join(",", originList));
+        response.setHeader("Access-Control-Allow-Origin", origin);
         response.setHeader("Access-Control-Allow-Methods",
                 "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
         chain.doFilter(request, response);
-    }
-
-    public void destroy() {
     }
 }

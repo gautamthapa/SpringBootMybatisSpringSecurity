@@ -53,7 +53,7 @@ public class UserController {
     @GetMapping("/hello")
     public String sayHello(){
         System.out.println("Hello gautam");
-       return  "true";
+       return "true";
     }
 
 }

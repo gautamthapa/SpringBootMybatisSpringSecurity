@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return tenantUser;
     }
 
-    public List<String> getOriginList() {
-        return userMapper.getOriginList();
+    public String getOrigin(String reqOrigin) {
+        return userMapper.getOriginList(reqOrigin);
     }
 }

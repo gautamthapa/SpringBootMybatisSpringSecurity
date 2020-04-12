@@ -88,11 +88,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("PS: " + bCryptPasswordEncoder.encode("123456"));
     }
 
+    //TODO here
+    // http.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    // http.addFilterBefore(corsConfFilter(), ChannelProcessingFilter.class);
+    // above two lines or below FilterChainProxy both are working
+
 //    @Bean
 //    public FilterChainProxy samlFilter() throws Exception {
 //        List<SecurityFilterChain> chains = new ArrayList<>();
 //
-//        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/api/users/test/**"), authenticationFilter(), corsConfFilter()));
+//        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/api/users/test/**"), corsConfFilter(),authenticationFilter()));
 //        return new FilterChainProxy(chains);
 //    }
     @Bean
@@ -111,17 +116,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-//    @Bean
-//    public FilterRegistrationBean authenticationRegistration(AuthenticationFilter filter) {
-//        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-//        registration.setEnabled(false);
-//        return registration;
-//    }
-//
-//    @Bean
-//    public FilterRegistrationBean corsRegistration(CORSFilter filter) {
-//        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-//        registration.setEnabled(false);
-//        return registration;
-//    }
+    // this FilterRegistrationBean for set enabled to false means it stops only once call filter
+    @Bean
+    public FilterRegistrationBean authenticationRegistration(AuthenticationFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean corsRegistration(CORSFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
 }

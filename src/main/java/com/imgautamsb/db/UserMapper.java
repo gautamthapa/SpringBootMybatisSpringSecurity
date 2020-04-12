@@ -12,6 +12,6 @@ public interface UserMapper {
     @Select("SELECT * FROM t_user WHERE username=#{username}")
     TenantUser findUserByUsername(String username);
 
-    @Select("SELECT origin_address FROM origin_master WHERE flag=1")
-    List<String> getOriginList();
+    @Select("SELECT origin_address FROM origin_master WHERE origin_address=#{origin} AND flag=1")
+    String getOriginList(String origin);
 }
