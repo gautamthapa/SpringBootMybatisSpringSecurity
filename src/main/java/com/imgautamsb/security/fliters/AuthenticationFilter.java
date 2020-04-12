@@ -15,15 +15,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class AuthenticationFilter extends OncePerRequestFilter {
+public class AuthenticationFilter extends GenericFilterBean {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -34,7 +37,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationManager authenticationManager;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
         final String requestHeader = request.getHeader("Auth");
         String username = request.getParameter("username");
         String password = request.getParameter("username");
@@ -42,26 +47,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         System.out.println("***AuthenticationFilter***");
         System.out.println("Username: " + username);
         System.out.println("PS: " + password);
-        chain.doFilter(request, response);
-//        try {
-//            authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(
-//                            username,
-//                            password
-//                    )
-//            );
-//            if (authentication != null)
-//                chain.doFilter(request, response);
-//
-//        } catch (AuthenticationException e) {
-//            System.out.println(e.getMessage());
-//            String jsonLoginResponse = new Gson().toJson(new InvalidLoginResponse(1001, "INVALID_USERNAME_AND_PASSWORD"));
-//            logger.info("JwtAuthenticationEntryPoint.............");
-//            response.setContentType("application/json");
-//            response.setStatus(401);
-//            response.getWriter().print(jsonLoginResponse);
-//        }
-
-
+        filterChain.doFilter(request, response);
     }
 }

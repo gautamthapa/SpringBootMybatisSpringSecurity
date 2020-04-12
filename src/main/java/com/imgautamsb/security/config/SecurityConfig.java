@@ -4,6 +4,7 @@ import com.imgautamsb.security.fliters.AuthenticationFilter;
 import com.imgautamsb.security.fliters.CORSFilter;
 import com.imgautamsb.security.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,8 +16,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -73,19 +82,46 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                ).permitAll()
                 .antMatchers("/api/users/**").permitAll()
                 .anyRequest().authenticated();
-
-        http.addFilterBefore(authenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new CORSFilter(), ChannelProcessingFilter.class);
+//        http.addFilterAfter(samlFilter(), BasicAuthenticationFilter.class);
+        http.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(corsConfFilter(), ChannelProcessingFilter.class);
         System.out.println("PS: " + bCryptPasswordEncoder.encode("123456"));
     }
 
+//    @Bean
+//    public FilterChainProxy samlFilter() throws Exception {
+//        List<SecurityFilterChain> chains = new ArrayList<>();
+//
+//        chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/api/users/test/**"), authenticationFilter(), corsConfFilter()));
+//        return new FilterChainProxy(chains);
+//    }
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationFilter authenticationFilterBean() throws Exception {
+    public AuthenticationFilter authenticationFilter() throws Exception {
         return new AuthenticationFilter();
     }
+
+    @Bean
+    public CORSFilter corsConfFilter() {
+        return new CORSFilter();
+    }
+
+
+//    @Bean
+//    public FilterRegistrationBean authenticationRegistration(AuthenticationFilter filter) {
+//        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+//        registration.setEnabled(false);
+//        return registration;
+//    }
+//
+//    @Bean
+//    public FilterRegistrationBean corsRegistration(CORSFilter filter) {
+//        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+//        registration.setEnabled(false);
+//        return registration;
+//    }
 }
